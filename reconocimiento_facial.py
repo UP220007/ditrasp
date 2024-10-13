@@ -5,8 +5,11 @@ import os
 face_recognizer = cv2.face.LBPHFaceRecognizer_create()
 face_recognizer.read('modelo_LBPH.xml')
 
-# Establecer la ruta del Haar Cascade de forma manual
-haar_cascade_path = '/usr/share/opencv/haarcascades/haarcascade_frontalface_default.xml'
+# Determinar la ruta del Haar Cascade según la versión de OpenCV
+if cv2.__version__.startswith('4'):
+    haar_cascade_path = cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
+else:
+    haar_cascade_path = '/usr/share/opencv/haarcascades/haarcascade_frontalface_default.xml'
 
 # Verificar si el archivo Haar Cascade existe
 if not os.path.exists(haar_cascade_path):
