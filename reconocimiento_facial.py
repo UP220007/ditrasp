@@ -1,6 +1,7 @@
 import cv2
 import matplotlib.pyplot as plt
 import os
+from datetime import datetime
 
 # Cargar el modelo previamente entrenado
 face_recognizer = cv2.face.LBPHFaceRecognizer_create()
@@ -51,8 +52,23 @@ while True:
 
         # Mostrar el nombre de la persona si se reconoce con confianza suficiente
         if confidence < 70:
-            print(f"Reconocido: {people[label]} con confianza: {confidence:.2f}")
-            cv2.putText(frame, f"{people[label]} ({confidence:.2f})", (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
+            nombre = people[label]
+            print(f"Reconocido: {nombre} con confianza: {confidence:.2f}")
+            cv2.putText(frame, f"{nombre} ({confidence:.2f})", (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
+            
+            # Guardar la foto
+            ahora = datetime.now()
+            fecha = ahora.strftime("%Y-%m-%d")
+            hora = ahora.strftime("%H-%M-%S")
+            folder_path = os.path.join('entradas', fecha)
+
+            # Crear la carpeta si no existe
+            os.makedirs(folder_path, exist_ok=True)
+
+            # Guardar la imagen
+            image_path = os.path.join(folder_path, f"{nombre}_{hora}.jpg")
+            cv2.imwrite(image_path, frame[y:y+h, x:x+w])
+
         else:
             print(f"Desconocido con confianza: {confidence:.2f}")
             cv2.putText(frame, "Desconocido", (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
