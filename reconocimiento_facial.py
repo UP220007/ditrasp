@@ -56,7 +56,19 @@ else:
                 nombre = people[label]
                 print(f"¡Bienvenido, {nombre}! Con confianza: {confidence:.2f}")
 
-                # Guardar la foto
+                # Definir un margen
+                margen = 20  # Cambia este valor según sea necesario
+
+                # Ajustar las coordenadas para incluir un área más completa
+                x_margen = max(x - margen, 0)  # Asegurarse de que no salimos de los límites
+                y_margen = max(y - margen, 0)
+                w_margen = min(w + 2 * margen, frame.shape[1] - x_margen)  # Asegurarse de no exceder el ancho de la imagen
+                h_margen = min(h + 2 * margen, frame.shape[0] - y_margen)  # Asegurarse de no exceder la altura de la imagen
+
+                # Guardar la imagen incluyendo el área ajustada
+                imagen_area = frame[y_margen:y_margen+h_margen, x_margen:x_margen+w_margen]
+
+                # Guardar la imagen
                 ahora = datetime.now()
                 fecha = ahora.strftime("%Y-%m-%d")
                 hora = ahora.strftime("%H-%M-%S")
@@ -65,9 +77,9 @@ else:
                 # Crear la carpeta si no existe
                 os.makedirs(folder_path, exist_ok=True)
 
-                # Guardar la imagen
+                # Guardar la imagen con el nombre del usuario
                 image_path = os.path.join(folder_path, f"{nombre}_{hora}.jpg")
-                cv2.imwrite(image_path, frame[y:y+h, x:x+w])
+                cv2.imwrite(image_path, imagen_area)
             else:
                 print("Desconocido con confianza: {:.2f}".format(confidence))
 
