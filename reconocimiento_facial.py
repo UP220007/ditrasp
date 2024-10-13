@@ -56,17 +56,13 @@ else:
                 nombre = people[label]
                 print(f"¡Bienvenido, {nombre}! Con confianza: {confidence:.2f}")
 
-                # Definir un margen
-                margen = 20  # Cambia este valor según sea necesario
+                # Ajustar las coordenadas para incluir el área de los hombros
+                margen_hombros = int(h * 1.5)  # Aumenta la altura a 1.5 veces la altura del rostro
+                x_margen = max(x - 20, 0)  # Ajustar horizontalmente con un margen
+                y_margen = max(y - int(margen_hombros * 0.5), 0)  # Ajustar verticalmente
 
-                # Ajustar las coordenadas para incluir un área más completa
-                x_margen = max(x - margen, 0)  # Asegurarse de que no salimos de los límites
-                y_margen = max(y - margen, 0)
-                w_margen = min(w + 2 * margen, frame.shape[1] - x_margen)  # Asegurarse de no exceder el ancho de la imagen
-                h_margen = min(h + 2 * margen, frame.shape[0] - y_margen)  # Asegurarse de no exceder la altura de la imagen
-
-                # Guardar la imagen incluyendo el área ajustada
-                imagen_area = frame[y_margen:y_margen+h_margen, x_margen:x_margen+w_margen]
+                # Guardar el área incluyendo los hombros
+                imagen_area = frame[y_margen:y_margen + margen_hombros, x_margen:x_margen + w + 40]
 
                 # Guardar la imagen
                 ahora = datetime.now()
