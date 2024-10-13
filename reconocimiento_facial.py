@@ -1,11 +1,27 @@
 import cv2
+import os
 
 # Cargar el modelo previamente entrenado
 face_recognizer = cv2.face.LBPHFaceRecognizer_create()
 face_recognizer.read('modelo_LBPH.xml')
 
+# Verificar la versión de OpenCV
+opencv_version = cv2.__version__
+
+# Determinar la ruta del Haar Cascade según la versión de OpenCV
+if int(opencv_version.split('.')[0]) >= 4 and hasattr(cv2, 'data'):
+    # OpenCV 4.6.0 o superior
+    haar_cascade_path = cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
+else:
+    # Versiones anteriores de OpenCV
+    haar_cascade_path = '/usr/share/opencv4/haarcascades/haarcascade_frontalface_default.xml'
+
+# Verificar si el archivo Haar Cascade existe
+if not os.path.exists(haar_cascade_path):
+    raise FileNotFoundError(f"No se encontró el archivo Haar Cascade en {haar_cascade_path}")
+
 # Cargar el Haar Cascade para detección de rostros
-face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+face_cascade = cv2.CascadeClassifier(haar_cascade_path)
 
 # Cargar los nombres desde el archivo
 people = {}
