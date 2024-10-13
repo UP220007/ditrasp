@@ -1,5 +1,4 @@
 import cv2
-import matplotlib.pyplot as plt
 import os
 from datetime import datetime
 
@@ -34,55 +33,44 @@ with open('nombres.txt', 'r') as f:
 camara = "http://192.168.1.100:8080/video"  # Cambia esta URL si es necesario
 cap = cv2.VideoCapture(camara)
 
-while True:
-    ret, frame = cap.read()
-    if not ret:
-        print("Error: No se pudo leer el frame.")
-        break
-
+# Capturar una imagen
+ret, frame = cap.read()
+if not ret:
+    print("Error: No se pudo leer el frame.")
+else:
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     faces = face_cascade.detectMultiScale(gray, 1.3, 5)
 
-    for (x, y, w, h) in faces:
-        rostro = gray[y:y+h, x:x+w]
-        rostro = cv2.resize(rostro, (200, 200))
+    if len(faces) == 0:
+        print("No se detectó ningún rostro.")
+    else:
+        for (x, y, w, h) in faces:
+            rostro = gray[y:y+h, x:x+w]
+            rostro = cv2.resize(rostro, (200, 200))
 
-        # Intentar reconocer el rostro
-        label, confidence = face_recognizer.predict(rostro)
+            # Intentar reconocer el rostro
+            label, confidence = face_recognizer.predict(rostro)
 
-        # Mostrar el nombre de la persona si se reconoce con confianza suficiente
-        if confidence < 70:
-            nombre = people[label]
-            print(f"Reconocido: {nombre} con confianza: {confidence:.2f}")
-            cv2.putText(frame, f"{nombre} ({confidence:.2f})", (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
-            
-            # Guardar la foto
-            ahora = datetime.now()
-            fecha = ahora.strftime("%Y-%m-%d")
-            hora = ahora.strftime("%H-%M-%S")
-            folder_path = os.path.join('entradas', fecha)
+            # Mostrar el nombre de la persona si se reconoce con confianza suficiente
+            if confidence < 70:
+                nombre = people[label]
+                print(f"¡Bienvenido, {nombre}! Con confianza: {confidence:.2f}")
 
-            # Crear la carpeta si no existe
-            os.makedirs(folder_path, exist_ok=True)
+                # Guardar la foto
+                ahora = datetime.now()
+                fecha = ahora.strftime("%Y-%m-%d")
+                hora = ahora.strftime("%H-%M-%S")
+                folder_path = os.path.join('entradas', fecha)
 
-            # Guardar la imagen
-            image_path = os.path.join(folder_path, f"{nombre}_{hora}.jpg")
-            cv2.imwrite(image_path, frame[y:y+h, x:x+w])
+                # Crear la carpeta si no existe
+                os.makedirs(folder_path, exist_ok=True)
 
-        else:
-            print(f"Desconocido con confianza: {confidence:.2f}")
-            cv2.putText(frame, "Desconocido", (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+                # Guardar la imagen
+                image_path = os.path.join(folder_path, f"{nombre}_{hora}.jpg")
+                cv2.imwrite(image_path, frame[y:y+h, x:x+w])
+            else:
+                print("Desconocido con confianza: {:.2f}".format(confidence))
 
-        cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
-
-    # Mostrar el video con las detecciones usando Matplotlib
-    plt.imshow(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-    plt.axis('off')  # Ocultar ejes
-    plt.pause(0.001)  # Breve pausa para permitir la visualización
-    plt.clf()  # Limpiar la figura para la siguiente iteración
-
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
+# Liberar la cámara y cerrar las ventanas
 cap.release()
 cv2.destroyAllWindows()
