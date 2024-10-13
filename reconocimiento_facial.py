@@ -1,19 +1,15 @@
 import cv2
-import matplotlib.pyplot as plt
 import os
 
 # Cargar el modelo previamente entrenado
 face_recognizer = cv2.face.LBPHFaceRecognizer_create()
 face_recognizer.read('modelo_LBPH.xml')
 
-# Verificar la versión de OpenCV
-opencv_version = cv2.__version__
-
 # Determinar la ruta del Haar Cascade según la versión de OpenCV
-if int(opencv_version.split('.')[0]) >= 4 and hasattr(cv2, 'data'):
+if cv2.__version__.startswith('4'):
     haar_cascade_path = cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
 else:
-    haar_cascade_path = '/usr/share/opencv4/haarcascades/haarcascade_frontalface_default.xml'
+    haar_cascade_path = '/usr/share/opencv/haarcascades/haarcascade_frontalface_default.xml'
 
 # Verificar si el archivo Haar Cascade existe
 if not os.path.exists(haar_cascade_path):
@@ -33,6 +29,10 @@ with open('nombres.txt', 'r') as f:
 camara = "http://192.168.1.100:8080/video"  # Cambia esta URL si es necesario
 cap = cv2.VideoCapture(camara)
 
+if not cap.isOpened():
+    print("Error: No se pudo abrir la cámara.")
+    exit()
+
 while True:
     ret, frame = cap.read()
     if not ret:
@@ -50,7 +50,7 @@ while True:
         label, confidence = face_recognizer.predict(rostro)
 
         # Mostrar el nombre de la persona si se reconoce con confianza suficiente
-        if confidence < 70:
+        if confidence < 70:  # El valor de confianza puede ajustarse según la precisión
             print(f"Reconocido: {people[label]} con confianza: {confidence:.2f}")
             cv2.putText(frame, f"{people[label]} ({confidence:.2f})", (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
         else:
@@ -59,12 +59,10 @@ while True:
 
         cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
 
-    # Mostrar el video con las detecciones usando Matplotlib
-    plt.imshow(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-    plt.axis('off')  # Ocultar ejes
-    plt.pause(0.001)  # Breve pausa para permitir la visualización
-    plt.clf()  # Limpiar la figura para la siguiente iteración
+    # Mostrar el video con las detecciones
+    cv2.imshow("Reconocimiento Facial", frame)
 
+    # Esperar a que se presione 'q' para salir
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
