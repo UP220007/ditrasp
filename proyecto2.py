@@ -199,3 +199,5 @@ try:
 except KeyboardInterrupt:
     print("Medición detenida por el usuario")
     reiniciar_pines()
+
+#
