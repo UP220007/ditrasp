@@ -148,6 +148,15 @@ def reconocimiento_facial(frame):
         
         else:
             print(f"Desconocido con confianza: {confidence:.2f}")
+            GPIO.output(GPIO_LED_RED, GPIO.HIGH)
+            GPIO.output(GPIO_BUZZER, GPIO.HIGH)
+            time.sleep(0.5)
+            GPIO.output(GPIO_BUZZER, GPIO.LOW)
+            time.sleep(0.5)
+            GPIO.output(GPIO_BUZZER, GPIO.HIGH)
+            time.sleep(0.5)
+            GPIO.output(GPIO_BUZZER, GPIO.LOW)
+            
             return False  # Usuario desconocido
 
 # Bucle principal
