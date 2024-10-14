@@ -163,7 +163,7 @@ try:
 
             # Esperar a que se pulse el botón
             button_state = GPIO.input(GPIO_BUTTON)
-            if button_state == GPIO.LOW:  # Si el botón está presionado
+            if button_state == GPIO.HIGH:  # Si el botón está presionado
                 print("Botón presionado. Capturando imagen...")
 
                 # Capturar la imagen desde la cámara
