@@ -12,4 +12,3 @@ while True:
     else:
         print('Hubo un fallo al leer del sensor. Intentalo de nuevo!')
     time.sleep(2)
-    GPIO.cleanup()
