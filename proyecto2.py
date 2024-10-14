@@ -50,12 +50,25 @@ if not os.path.exists('modelo_LBPH.xml'):
 if not os.path.exists('nombres.txt'):
     raise FileNotFoundError("El archivo 'nombres.txt' no se encontró.")
 
-# Cargar el modelo entrenado de reconocimiento facial
+# Cargar el modelo previamente entrenado
 face_recognizer = cv2.face.LBPHFaceRecognizer_create()
 face_recognizer.read('modelo_LBPH.xml')
 
-# Cargar Haar Cascade para detección de rostros
-face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+# Verificar la versión de OpenCV
+opencv_version = cv2.__version__
+
+# Determinar la ruta del Haar Cascade según la versión de OpenCV
+if int(opencv_version.split('.')[0]) >= 4 and hasattr(cv2, 'data'):
+    haar_cascade_path = cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
+else:
+    haar_cascade_path = '/usr/share/opencv4/haarcascades/haarcascade_frontalface_default.xml'
+
+# Verificar si el archivo Haar Cascade existe
+if not os.path.exists(haar_cascade_path):
+    raise FileNotFoundError(f"No se encontró el archivo Haar Cascade en {haar_cascade_path}")
+
+# Cargar el Haar Cascade para detección de rostros
+face_cascade = cv2.CascadeClassifier(haar_cascade_path)
 
 # Cargar los nombres desde el archivo
 people = {}
@@ -171,33 +184,22 @@ try:
                     GPIO.output(GPIO_LED_GREEN, GPIO.HIGH)
                     GPIO.output(GPIO_LED_RED, GPIO.LOW)
                 else:
-                    # Usuario desconocido, encender LED rojo y hacer sonar el buzzer (2 pitidos largos)
-                    GPIO.output(GPIO_LED_RED, GPIO.HIGH)
+                    # Usuario desconocido, encender LED rojo
                     GPIO.output(GPIO_LED_GREEN, GPIO.LOW)
-                    GPIO.output(GPIO_BUZZER, GPIO.HIGH)
-                    time.sleep(0.5)
-                    GPIO.output(GPIO_BUZZER, GPIO.LOW)
-                    time.sleep(0.5)
-                    GPIO.output(GPIO_BUZZER, GPIO.HIGH)
-                    time.sleep(0.5)
-                    GPIO.output(GPIO_BUZZER, GPIO.LOW)
-
-                # Apagar todos los LEDs después de 2 segundos
-                time.sleep(2)
+                    GPIO.output(GPIO_LED_RED, GPIO.HIGH)
+                
+                time.sleep(2)  # Esperar 2 segundos para que se vea el estado
+                
+                # Apagar LEDs
                 GPIO.output(GPIO_LED_GREEN, GPIO.LOW)
                 GPIO.output(GPIO_LED_RED, GPIO.LOW)
-                GPIO.output(GPIO_LED_YELLOW, GPIO.HIGH)  # Volver al estado de espera
+                
         else:
-            # Nadie cerca, mantener el sistema en espera (LED amarillo encendido)
-            GPIO.output(GPIO_LED_GREEN, GPIO.LOW)
-            GPIO.output(GPIO_LED_RED, GPIO.LOW)
-            GPIO.output(GPIO_LED_YELLOW, GPIO.HIGH)
+            print("Nadie cerca. Esperando...")
+        time.sleep(1)  # Esperar 1 segundo antes de volver a medir la distancia
 
-        time.sleep(1)
-
-# Limpiar GPIO en caso de interrupción
 except KeyboardInterrupt:
-    print("Medición detenida por el usuario")
+    print("Programa interrumpido por el usuario.")
+finally:
+    # Limpiar los pines de GPIO al salir
     reiniciar_pines()
-
-#
