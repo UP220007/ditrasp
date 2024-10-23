@@ -44,7 +44,7 @@ def crear_dato(nombre, valor):
     connection = conectar_db()
     try:
         with connection.cursor() as cursor:
-            sql = "INSERT INTO datos (nombre, valor) VALUES (%s, %s)"
+            sql = "INSERT INTO students (nombre, valor) VALUES (%s, %s)"
             cursor.execute(sql, (nombre, valor))
         connection.commit()
     finally:
@@ -54,7 +54,7 @@ def leer_datos():
     connection = conectar_db()
     try:
         with connection.cursor() as cursor:
-            sql = "SELECT * FROM datos"
+            sql = "SELECT * FROM students"
             cursor.execute(sql)
             return cursor.fetchall()
     finally:
@@ -64,7 +64,7 @@ def actualizar_dato(id, nuevo_valor):
     connection = conectar_db()
     try:
         with connection.cursor() as cursor:
-            sql = "UPDATE datos SET valor = %s WHERE id = %s"
+            sql = "UPDATE students SET valor = %s WHERE id = %s"
             cursor.execute(sql, (nuevo_valor, id))
         connection.commit()
     finally:
@@ -74,7 +74,7 @@ def eliminar_dato(id):
     connection = conectar_db()
     try:
         with connection.cursor() as cursor:
-            sql = "DELETE FROM datos WHERE id = %s"
+            sql = "DELETE FROM students WHERE id = %s"
             cursor.execute(sql, (id,))
         connection.commit()
     finally:
