@@ -33,9 +33,9 @@ def leer_temperatura():
 def conectar_db():
     return pymysql.connect(
         host='localhost',
-        user='tu_usuario',      # Cambia esto por tu usuario
-        password='tu_contraseña',  # Cambia esto por tu contraseña
-        database='tu_base_de_datos',  # Cambia esto por tu base de datos
+        user='alquimista',      # Cambia esto por tu usuario
+        password='RoyMustang',  # Cambia esto por tu contraseña
+        database='sistenb',  # Cambia esto por tu base de datos
         cursorclass=pymysql.cursors.DictCursor
     )
 
