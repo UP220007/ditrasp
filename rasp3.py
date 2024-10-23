@@ -45,7 +45,7 @@ def formatear_datos(datos):
     encabezado = f"{'ID':<5} {'Nombre':<20} {'Valor':<10}\n"
     tabla = encabezado + "-" * 40 + "\n"
     for dato in datos:
-        fila = f"{dato['id']:<5} {dato['nombre']:<20} {dato['valor']:<10}\n"
+        fila = f"{dato['id']:<5} {dato['first_name']:<20}{dato['last_name']:<20} {dato['email']:<10}{dato['birth_date']:<20}{dato['enrollment_date']:<20}\n"
         tabla += fila
     return tabla
 
